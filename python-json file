@@ -1,0 +1,35 @@
+import json
+import boto3
+
+translate = boto3.client('translate')
+
+def lambda_handler(event, context):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+    }
+
+    try:
+        body = json.loads(event['body'])
+        text = body['text']
+        source_lang = body['source_lang']
+        target_lang = body['target_lang']
+
+        response = translate.translate_text(
+            Text=text,
+            SourceLanguageCode=source_lang,
+            TargetLanguageCode=target_lang
+        )
+
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': json.dumps({'translated_text': response['TranslatedText']})
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': headers,
+            'body': json.dumps({'error': str(e)})
+        }
