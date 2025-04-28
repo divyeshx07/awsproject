@@ -1,9 +1,7 @@
 import json
 import boto3
-import base64
 
 translate = boto3.client('translate')
-polly = boto3.client('polly')
 
 SUPPORTED_LANGUAGES = [
     'en', 'es', 'fr', 'de', 'hi', 'zh', 'ja', 'ar', 'it', 'pt', 'ru', 'ko', 'tr', 'pl', 'nl', 'sv', 'id', 'th', 'cs'
@@ -35,33 +33,16 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': f'Target language "{target_lang}" is not supported'})
             }
 
-        # Translate the text
-        translation_response = translate.translate_text(
+        response = translate.translate_text(
             Text=text,
             SourceLanguageCode=source_lang,
             TargetLanguageCode=target_lang
         )
 
-        translated_text = translation_response['TranslatedText']
-
-        # Convert the translated text to speech using Polly
-        speech_response = polly.synthesize_speech(
-            Text=translated_text,
-            OutputFormat='mp3',
-            VoiceId='Joanna'  # You can select different voices, e.g., 'Joanna', 'Matthew', 'Ivy'
-        )
-
-        # Get the audio stream and encode it as base64
-        audio_stream = speech_response['AudioStream'].read()
-        audio_base64 = base64.b64encode(audio_stream).decode('utf-8')
-
         return {
             'statusCode': 200,
             'headers': headers,
-            'body': json.dumps({
-                'translated_text': translated_text,
-                'audio_url': 'data:audio/mp3;base64,' + audio_base64
-            })
+            'body': json.dumps({'translated_text': response['TranslatedText']})
         }
 
     except Exception as e:
@@ -69,4 +50,4 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'headers': headers,
             'body': json.dumps({'error': str(e)})
-        }
+        } 
