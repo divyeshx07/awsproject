@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+this is html code :<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -22,6 +22,7 @@
       position: relative;
     }
 
+    /* Overlay for better text readability */
     body::before {
       content: '';
       position: absolute;
@@ -69,7 +70,8 @@
       transition: border-color 0.3s;
     }
 
-    textarea::placeholder {
+    textarea::placeholder,
+    input::placeholder {
       color: rgba(255, 255, 255, 0.6);
     }
 
@@ -79,22 +81,14 @@
       margin: 20px 0;
     }
 
-    .lang-inputs select {
+    .lang-inputs input {
       flex: 1;
       padding: 12px;
       font-size: 15px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       outline: none;
-      background: rgba(30, 30, 30, 0.6);
-      color: #ffffff;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-    }
-
-    .lang-inputs select option {
-      background-color: #333;
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
 
@@ -144,7 +138,7 @@
         flex-direction: column;
       }
 
-      .lang-inputs select {
+      .lang-inputs input {
         margin-bottom: 10px;
       }
     }
@@ -157,30 +151,8 @@
     <textarea id="inputText" rows="5" placeholder="Enter text to translate..."></textarea>
 
     <div class="lang-inputs">
-      <select id="sourceLang">
-        <option value="">From (Select language)</option>
-        <option value="auto">Auto Detect</option>
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-        <option value="fr">French</option>
-        <option value="es">Spanish</option>
-        <option value="de">German</option>
-        <option value="zh">Chinese</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-      </select>
-
-      <select id="targetLang">
-        <option value="">To (Select language)</option>
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-        <option value="fr">French</option>
-        <option value="es">Spanish</option>
-        <option value="de">German</option>
-        <option value="zh">Chinese</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-      </select>
+      <input id="sourceLang" placeholder="From (e.g., en)">
+      <input id="targetLang" placeholder="To (e.g., hi)">
     </div>
 
     <button onclick="translateText()">Translate</button>
@@ -203,14 +175,14 @@
       document.getElementById('outputText').innerText = "⏳ Translating...";
 
       try {
-        const response = await fetch('https://nmhpqxoshi.execute-api.eu-west-2.amazonaws.com/prod2/translate', {
+        const response = await fetch('https://nmhpqxoshi.execute-api.eu-west-2.amazonaws.com/prod/translate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, source_lang: sourceLang, target_lang: targetLang })
+          body: JSON.stringify({ text, sourceLang, targetLang })
         });
 
         const data = await response.json();
-        document.getElementById('outputText').innerText = data.translated_text || data.error || "⚠️ Something went wrong.";
+        document.getElementById('outputText').innerText = data.translatedText || data.error || "⚠️ Something went wrong.";
       } catch (error) {
         document.getElementById('outputText').innerText = "❌ Error: " + error.message;
       }
