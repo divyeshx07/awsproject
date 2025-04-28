@@ -1,5 +1,6 @@
 import json
 import boto3
+import base64
 
 translate = boto3.client('translate')
 polly = boto3.client('polly')
@@ -50,16 +51,16 @@ def lambda_handler(event, context):
             VoiceId='Joanna'  # You can select different voices, e.g., 'Joanna', 'Matthew', 'Ivy'
         )
 
-        # Save the speech to a file (this can be saved to S3 if needed)
+        # Get the audio stream and encode it as base64
         audio_stream = speech_response['AudioStream'].read()
+        audio_base64 = base64.b64encode(audio_stream).decode('utf-8')
 
-        # Return the translated text and audio URL (you can upload to S3 for playback)
         return {
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps({
                 'translated_text': translated_text,
-                'audio_url': 'data:audio/mp3;base64,' + base64.b64encode(audio_stream).decode('utf-8')
+                'audio_url': 'data:audio/mp3;base64,' + audio_base64
             })
         }
 
