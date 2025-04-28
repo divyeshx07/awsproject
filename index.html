@@ -203,7 +203,7 @@
       document.getElementById('outputText').innerText = "⏳ Translating...";
 
       try {
-        const response = await fetch('https://nmhpqxoshi.execute-api.eu-west-2.amazonaws.com/prod/translate', {
+        const response = await fetch('https://nmhpqxoshi.execute-api.eu-west-2.amazonaws.com/prod2/translate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, source_lang: sourceLang, target_lang: targetLang })
